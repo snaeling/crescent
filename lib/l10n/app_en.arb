@@ -1,0 +1,41 @@
+{
+    "appName": "crescent",
+    "@helloWorld": {
+      "description": "The name of the app."
+    },
+    "home": "Home",
+    "@home": {
+      "description": "The home feed."
+    },
+    "search": "Search",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "comments_title": "comments:",
+    "posts_hidden": "{value,plural, =1{{value} post hidden}other{{value} posts hidden}}",
+    "@posts_hidden": {
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+
+    "comments": "{value,plural, =1{{value} comment}other{{value} comments}}",
+    "@comments": {
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+
+    "in_reply_to": "in reply to @{value}'s post:",
+    "@in_reply_to": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    }
+
+  }
