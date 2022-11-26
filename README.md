@@ -10,12 +10,16 @@ Not really usable at the moment, but can view home feed*, tags, projects, commen
 The API is implemented separately in [cohost_dart](https://github.com/snaeling/cohost_dart)! Its progress mostly mirrors this project.
 
 ## Screenshots
+<p float="left">
 <img src="github/home-feed.png " width="200" />
 <img src="github/wip-theme.png " width="200" />
 <img src="github/view-post.png " width="200" />
+</p>
+<p float="left">
 <img src="github/view-project.png " width="200" />
 <img src="github/truncation.png " width="200" />
 <img src="github/view-feed.png " width="200" />
+</p>
 
 </br>
 
