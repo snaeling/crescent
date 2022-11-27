@@ -16,6 +16,10 @@ class SecureStorageService {
     return await storage.read(key: 'cookie');
   }
 
+  retireCookie() async {
+    await storage.delete(key: 'cookie');
+  }
+
   write({required String key, required String value}) async {
     await storage.write(key: key, value: value);
   }

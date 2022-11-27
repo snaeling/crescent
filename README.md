@@ -1,9 +1,9 @@
 # crescent
 WIP mobile app for cohost.org
 
-Not really usable at the moment, but can view home feed*, tags, projects, comments, etc
+Not really usable at the moment, but can view home feed, tags, projects, comments, etc, as well as search for tags and projects.
 
-\* Implemented but not accessible as per current commit. Currently uses `#The Cohost Global Feed`!
+Content warnings/adult posts are hidden, but user preferences do not affect this behavior yet.
  
 
 ## API
@@ -17,8 +17,8 @@ The API is implemented separately in [cohost_dart](https://github.com/snaeling/c
 </p>
 <p float="left">
 <img src="github/view-project.png " width="200" />
-<img src="github/truncation.png " width="200" />
-<img src="github/view-feed.png " width="200" />
+<img src="github/search.png " width="200" />
+<img src="github/content-warnings.png " width="200" />
 </p>
 
 </br>

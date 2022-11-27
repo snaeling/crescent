@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:crescent/src/features/posts/application/feed_provider.dart';
 import 'package:crescent/src/features/posts/presentation/post_card.dart';
+import 'package:crescent/src/features/posts/presentation/select_page_dialog.dart';
 import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -24,7 +25,10 @@ class TagScreen extends HookConsumerWidget {
           child: CustomScrollView(
             controller: scrollController,
             slivers: [
-              const SliverAppBar(),
+              SliverAppBar(
+                title: Text('#$tag'),
+                floating: true,
+              ),
               Builder(
                 builder: (context) {
                   final isLoading = ref.watch(tagFeedProvider(tag)).isLoading;
@@ -53,6 +57,9 @@ class TagScreen extends HookConsumerWidget {
                   }
                 },
               ),
+              const SliverPadding(
+                padding: EdgeInsets.symmetric(vertical: 150),
+              )
             ],
           ),
         ),
@@ -69,7 +76,12 @@ class TagScreen extends HookConsumerWidget {
             child: const Icon(Icons.arrow_back),
           ),
           FilledButton.tonal(
-              onPressed: () {}, child: Text(feedState.page.toString())),
+              onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => SelectPageDialog(
+                        currentPage: feedState.page, onSelect: feed.toPage),
+                  ),
+              child: Text(feedState.page.toString())),
           FilledButton.tonal(
             onPressed: () {
               feed.nextPage();

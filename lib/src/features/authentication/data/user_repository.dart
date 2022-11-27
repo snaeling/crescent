@@ -7,28 +7,41 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 part 'user_repository.g.dart';
 
 class UserRepository {
-  UserRepository(this.api, this.ref);
+  UserRepository(this.api, this.ref) {
+    _init();
+  }
   // TODO: auth stream
   // final _authState = InMemoryStore<User?>(null);
 
-  // Stream<User?> authStateChanges() => _authState.stream;
   // User? get currentUser => _authState.value;
 
   final Cohost api;
   final Ref ref;
 
-  Future<void> logIn(String email, String password) async {
-    var res = await api.user.login(email: email, password: password);
-
+  Future<bool> logIn({String? cookie, String? email, String? password}) async {
+    var res =
+        await api.user.login(cookie: cookie, email: email, password: password);
     ref.watch(secureStorageServiceProvider).storeCookie(res);
+    var valid = (await loggedIn()).loggedIn;
+    if (valid) {
+      ref.watch(secureStorageServiceProvider).storeCookie(res);
+    }
+    return valid;
   }
 
-  Future<void> logInWithCookie(String cookie) async {
-    var res = await api.user.login(cookie: cookie);
+  Future<bool> logInWithCookie(String cookie) async {
+    var res = await logIn(cookie: cookie);
 
-    ref.watch(secureStorageServiceProvider).storeCookie(res);
+    return res;
   }
 
+  Future<User> loggedIn() async {
+    var res = await api.user.loggedIn();
+    ref.watch(authProvider.notifier).setAuthState(res.loggedIn);
+    return res;
+  }
+
+  _init() {}
   //void dispose() => _authState.close();
 }
 

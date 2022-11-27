@@ -1,3 +1,4 @@
+import 'package:crescent/src/features/authentication/application/auth_provider.dart';
 import 'package:crescent/src/features/posts/application/posts_service.dart';
 import 'package:cohost_api/cohost.dart';
 import 'package:flutter/foundation.dart';
@@ -43,93 +44,88 @@ class FeedNotifier extends StateNotifier<FeedState> {
   final int _postsPerPage = 20;
 
   _init() async {
-    state = state.copyWith(initiated: DateTime.now(), page: 0);
-    late final List<Post> posts;
-    if (_config.handle != null) {
-      posts = await ref
-          .watch(postsServiceProvider)
-          .fetchProfilePosts(_config.handle!, state.page);
-    } else if (_config.tag != null) {
-      posts =
-          await ref.watch(postsServiceProvider).fetchPostsByTag(_config.tag!);
-    } else {
-      posts = await ref.watch(postsServiceProvider).fetchHomeFeedTest();
-    }
-
-    if (posts.isEmpty || posts.length < _postsPerPage) {
-      state = state.copyWith(posts: posts, isDone: true, isLoading: false);
-      return;
-    }
-
-    state = state.copyWith(posts: posts, isLoading: false);
+    state = state.copyWith(
+        initiated: DateTime.now(),
+        page: 0,
+        isDone: false,
+        isError: false,
+        isLoading: true);
+    await _getPosts(0);
   }
 
   nextPage() async {
     if (state.isDone) return;
     final newPage = state.page + 1;
-    state = state.copyWith(isLoading: true, page: newPage);
+    state = state.copyWith(
+        isLoading: true, page: newPage, isDone: false, isError: false);
 
-    late final List<Post> posts;
-    // TODO: this should be move into a separate function
-    if (_config.handle != null) {
-      posts = await ref
-          .watch(postsServiceProvider)
-          .fetchProfilePosts(_config.handle!, newPage);
-    } else if (_config.tag != null) {
-      posts = await ref.watch(postsServiceProvider).fetchPostsByTag(
-          _config.tag!, state.initiated!, newPage * _postsPerPage);
-    } else {
-      posts = await ref
-          .watch(postsServiceProvider)
-          .fetchHomeFeedTest(state.initiated!, newPage * _postsPerPage);
-    }
-
-    if (posts.isEmpty || posts.length < _postsPerPage) {
-      state = state.copyWith(posts: posts, isDone: true, isLoading: false);
-      return;
-    }
-
-    state = state.copyWith(posts: posts, isLoading: false, page: newPage);
+    _getPosts(newPage);
   }
 
   previousPage() async {
     if (state.page <= 0) return;
     final newPage = state.page - 1;
-    state = state.copyWith(isLoading: true, page: newPage);
+    state = state.copyWith(isLoading: true, page: newPage, isError: false);
 
-    late final List<Post> posts;
-    if (_config.handle != null) {
-      posts = await ref
-          .watch(postsServiceProvider)
-          .fetchProfilePosts(_config.handle!, newPage);
-    } else if (_config.tag != null) {
-      posts = await ref.watch(postsServiceProvider).fetchPostsByTag(
-          _config.tag!, state.initiated!, newPage * _postsPerPage);
-    } else {
-      posts = await ref
-          .watch(postsServiceProvider)
-          .fetchHomeFeedTest(state.initiated!, newPage * _postsPerPage);
-    }
-
-    state = state.copyWith(posts: posts, isLoading: false, page: newPage);
+    _getPosts(newPage);
   }
 
-  toPage(int page) async {}
+  toPage(int page) async {
+    if (state.isDone && page > state.page) return;
+    final newPage = page;
+    state = state.copyWith(
+        isLoading: true, page: newPage, isDone: false, isError: false);
+
+    _getPosts(newPage);
+  }
+
+  _getPosts(int page) async {
+    bool auth = ref.read(authProvider).loggedIn;
+    state = state.copyWith(
+        isLoading: true, page: page, isDone: false, isError: false, posts: []);
+
+    List<Post>? posts;
+    try {
+      if (_config.handle != null) {
+        posts = await ref
+            .watch(postsServiceProvider)
+            .fetchProfilePosts(_config.handle!, page);
+        _successState(posts);
+      } else if (_config.tag != null || !auth) {
+        posts = await ref.watch(postsServiceProvider).fetchPostsByTag(
+            auth ? _config.tag! : 'The Cohost Global Feed',
+            state.initiated,
+            page * _postsPerPage);
+        _successState(posts);
+      } else {
+        posts = await ref
+            .watch(postsServiceProvider)
+            .fetchHomeFeed(state.initiated!, page * _postsPerPage);
+        _successState(posts);
+      }
+    } catch (e) {
+      _errorState();
+    }
+
+    state = state.copyWith(isLoading: false, page: page);
+  }
+
+  _successState(List<Post> posts) {
+    if (posts.isEmpty || posts.length < _postsPerPage) {
+      state = state.copyWith(posts: posts, isDone: true, isLoading: false);
+      return;
+    } else {
+      state = state.copyWith(posts: posts, isDone: false);
+    }
+  }
+
+  _errorState() {
+    state = state.copyWith(isError: true);
+  }
 
   refresh() async {
     await _init();
     return;
-    const newPage = 0;
-    state = state.copyWith(isLoading: true, posts: [], page: newPage);
-
-    final posts = await ref.watch(postsServiceProvider).fetchHomeFeedTest();
-
-    if (posts.isEmpty || posts.length < _postsPerPage) {
-      state = state.copyWith(posts: posts, isDone: true, isLoading: false);
-      return;
-    }
-
-    state = state.copyWith(posts: posts, isLoading: false, page: newPage);
   }
 }
 

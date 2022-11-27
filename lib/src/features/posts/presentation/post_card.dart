@@ -1,10 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:crescent/src/common_widgets/image_container.dart';
 import 'package:crescent/src/common_widgets/post_blocks_builder.dart';
-import 'package:crescent/src/features/authentication/data/user_repository.dart';
+import 'package:crescent/src/features/posts/application/post_provider.dart';
 import 'package:crescent/src/routes/app_router.gr.dart';
 import 'package:crescent/src/utils/localized_build_context.dart';
 import 'package:cohost_api/cohost.dart';
+import 'package:crescent/src/utils/time_ago_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,84 +13,29 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 
-class PostCard extends HookWidget {
+import 'content_warnings.dart';
+
+class PostCard extends HookConsumerWidget {
   const PostCard({required this.post, super.key});
 
   final Post post;
 
   @override
-  Widget build(BuildContext context) {
-    // mayyybe move some of this stuff to the api library
-    // it's not state stuff so I think it's fine being here architecturally?
-
-    var estimatedLength = 0;
-    var shareDiscongruence = 0;
-    var truncateAt = 0;
-    final isShare = post.transparentShareOfPostId != null;
-    bool crime = false;
-    Post postDisplayed = post;
-
-    // not accurate because shares remain in the share tree, but it's good
-    // enough
-
-    late final int hiddenPosts;
-
-    useEffect(() {
-      if (isShare) {
-        post.shareTree.reversed.toList().forEach((element) {
-          if (element.postId == post.transparentShareOfPostId) {
-            postDisplayed = element;
-            return;
-          }
-          shareDiscongruence++;
-        });
-      }
-
-      final html = RegExp(r'<\/?[a-z][\s\S]*>', caseSensitive: false);
-      // bunch of things not supported by the flutter_html parsing library
-      final List<String> cssCrimes = [
-        'animation:',
-        'border-radius:',
-        'filter:',
-        'position:',
-        'aspect-ratio:',
-        '-webkit',
-        'background:'
-      ];
-      var body = postDisplayed.plainTextBody;
-      if (html.hasMatch(postDisplayed.plainTextBody)) {
-        if (body.contains("style=")) {
-          for (var element in cssCrimes) {
-            if (body.contains(element)) {
-              crime = true;
-              break;
-            }
-          }
-        }
-      }
-
-      if (postDisplayed.blocks!.length > 1 && !crime) {
-        for (var index = 0; index < postDisplayed.blocks!.length; index++) {
-          var block = postDisplayed.blocks![index];
-          estimatedLength += block.type == PostBlockType.attachment
-              ? 700
-              : block.content!.length;
-          if (estimatedLength > 1700) {
-            // if this block is the last block, dont truncate
-            truncateAt = postDisplayed.blocks!.length > index ? index : 0;
-            break;
-          }
-        }
-      }
-
-      shareDiscongruence = shareDiscongruence > 0 ? 1 : 0;
-      hiddenPosts = post.shareTree.isNotEmpty
-          ? (post.blocks!.isNotEmpty
-              ? (post.shareTree.length - shareDiscongruence)
-              : (post.shareTree.length - 1 - shareDiscongruence))
-          : 0;
-      return null;
-    });
+  Widget build(BuildContext context, WidgetRef ref) {
+    final postDisplayed =
+        ref.watch(postProvider(post).select((post) => post.postDisplayed!));
+    final isShare =
+        ref.watch(postProvider(post).select((post) => post.isShare));
+    final crime = ref.watch(postProvider(post).select((post) => post.crime));
+    final truncateAt =
+        ref.watch(postProvider(post).select((post) => post.truncateAt));
+    final hiddenPosts =
+        ref.watch(postProvider(post).select((post) => post.hiddenPosts));
+    final showPostToggle =
+        ref.watch(postProvider(post).select((post) => post.showPostToggle));
+    final showPost =
+        ref.watch(postProvider(post).select((post) => post.showPost));
+    final postNotifier = ref.watch(postProvider(post).notifier);
 
     return GestureDetector(
       onTap: () => context.router.push(SinglePostRoute(
@@ -152,24 +98,46 @@ class PostCard extends HookWidget {
                           )
                         ],
                       ),
-                    PostCardProject(proj: postDisplayed.postingProject),
+                    PostCardProject(
+                        project: postDisplayed.postingProject,
+                        post: postDisplayed),
                     const SizedBox(height: 15),
-                    crime
-                        ? EmbeddedWebview(post: postDisplayed)
-                        : Padding(
-                            padding:
-                                const EdgeInsets.only(left: 20.0, right: 20),
-                            child: postDisplayed.blocks!.isNotEmpty
-                                ? PostBlocksBuilder(
-                                    post: postDisplayed, truncate: truncateAt)
-                                : Text(
-                                    postDisplayed.headline,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                          ),
+                    if (!showPost) ...[
+                      if (postDisplayed.effectiveAdultContent)
+                        PostAdultWarning(post: postDisplayed),
+                      if (postDisplayed.cws.isNotEmpty)
+                        PostContentWarning(post: postDisplayed),
+                    ],
+                    if (showPostToggle)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FilledButton(
+                          onPressed: () {
+                            postNotifier.toggleVisibility();
+                          },
+                          child: Text(showPost
+                              ? context.loc.hide_post
+                              : context.loc.show_post),
+                        ),
+                      ),
+                    if (showPost)
+                      crime
+                          ? EmbeddedWebview(post: postDisplayed)
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 20.0, right: 20),
+                              child: postDisplayed.blocks!.isNotEmpty
+                                  ? PostBlocksBuilder(
+                                      post: postDisplayed, truncate: truncateAt)
+                                  : Text(
+                                      postDisplayed.headline,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge!
+                                          .copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                            ),
                     const SizedBox(height: 15),
                   ],
                 ),
@@ -285,13 +253,19 @@ class PostCardFooter extends StatelessWidget {
 class PostCardProject extends StatelessWidget {
   const PostCardProject({
     super.key,
-    required this.proj,
+    required this.project,
+    required this.post,
   });
 
-  final Project proj;
+  final Project project;
+  final Post post;
 
   @override
   Widget build(BuildContext context) {
+    final displayName =
+        (project.displayName == null || project.displayName == "")
+            ? '@${project.handle}'
+            : project.displayName!;
     return Material(
       color: Theme.of(context).colorScheme.secondaryContainer,
       borderRadius: const BorderRadius.only(
@@ -303,10 +277,10 @@ class PostCardProject extends StatelessWidget {
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () => context.router
-              .push(ProjectRoute(handle: proj.handle, project: proj)),
+              .push(ProjectRoute(handle: project.handle, project: project)),
           child: Row(
             children: [
-              Avatar(proj),
+              Avatar(project),
               const SizedBox(width: 10),
               Flexible(
                 child: Column(
@@ -314,7 +288,15 @@ class PostCardProject extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      proj.displayName ?? proj.handle,
+                      post.publishedAt.timeAgo(),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(fontWeight: FontWeight.bold, height: 1.15),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      displayName,
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium!
@@ -322,7 +304,7 @@ class PostCardProject extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '@${proj.handle} ${(proj.pronouns != null && proj.pronouns != "") ? "• ${proj.pronouns!}" : ""}',
+                      '@${project.handle} ${(project.pronouns != null && project.pronouns != "") ? "• ${project.pronouns!}" : ""}',
                       style: Theme.of(context)
                           .textTheme
                           .titleSmall!
@@ -665,18 +647,6 @@ String header = """<!DOCTYPE html>
         --emoji-scale: 1.4em;
     }
 </style>
-<meta property="og:site_name" content="colin on cohost" data-rh="true">
-<meta property="og:title" content="colin on cohost" data-rh="true">
-<meta property="og:description" content="" data-rh="true">
-<meta property="og:type" content="article" data-rh="true">
-<meta property="article:published_time" content="2022-11-24T04:10:37.603Z" data-rh="true">
-<meta property="article:author" content="https://cohost.org/vogon" data-rh="true">
-<meta property="og:url" content="https://cohost.org/vogon/post/435181-empty" data-rh="true">
-<meta property="og:image"
-    content="https://staging.cohostcdn.org/avatar/2-2208877b-58a9-4572-bd7b-2abcc641b6f9-profile.png" data-rh="true">
-<meta property="og:image:alt" content="vogon" data-rh="true">
-<meta property="og:image:width" content="128" data-rh="true">
-<meta property="og:image:height" content="128" data-rh="true">
-<meta property="twitter:card" content="summary" data-rh="true">
+
 
 </head><body style="font-family: 'Atkinson Hyperlegible',color:white !important"><div>""";

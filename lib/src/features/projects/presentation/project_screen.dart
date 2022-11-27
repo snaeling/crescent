@@ -15,6 +15,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'dart:ui' as ui;
 
+import '../../posts/presentation/select_page_dialog.dart';
+
 class ProjectScreen extends HookConsumerWidget {
   const ProjectScreen(
       {super.key, @PathParam('handle') required this.handle, this.project});
@@ -25,7 +27,10 @@ class ProjectScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final proj = project ??
-        ref.watch(isarServiceProvider).getProjectSync(handle)?.toProject() ??
+        ref
+            .watch(isarCacheServiceProvider)
+            .getProjectSync(handle)
+            ?.toProject() ??
         Project(
           handle: handle,
           projectId: 0,
@@ -90,6 +95,7 @@ class ProjectScreen extends HookConsumerWidget {
                   }
                 },
               ),
+              const SliverPadding(padding: EdgeInsets.symmetric(vertical: 150))
             ],
           ),
         ),
@@ -106,7 +112,12 @@ class ProjectScreen extends HookConsumerWidget {
             child: const Icon(Icons.arrow_back),
           ),
           FilledButton.tonal(
-              onPressed: () {}, child: Text(feedState.page.toString())),
+              onPressed: () => showDialog(
+                    context: context,
+                    builder: (context) => SelectPageDialog(
+                        currentPage: feedState.page, onSelect: feed.toPage),
+                  ),
+              child: Text(feedState.page.toString())),
           FilledButton.tonal(
             onPressed: () {
               feed.nextPage();

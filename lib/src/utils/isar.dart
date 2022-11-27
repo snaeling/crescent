@@ -27,12 +27,12 @@ part 'isar.g.dart';
 /// ### [savePosts]
 /// Converts a list of [Post] to [IsarPost] and saves them, with correct
 /// linking for all involved elements.
-class IsarService {
+class IsarCacheService {
   //final Duration ttl = const Duration(days: 10);
   late Future<Isar> database;
   late Isar _isar;
 
-  IsarService() {
+  IsarCacheService() {
     database = _openDatabase();
     _initIsar();
     // Handle expired database entries when the app is opened.
@@ -70,6 +70,13 @@ class IsarService {
         var currProj = IsarProject.fromProject(relatedProject);
         iProjs.add(currProj);
       }
+    }
+  }
+
+  Future<void> saveProjects(List<Project> projects) async {
+    List<IsarProject> iProjs = [];
+    for (Project project in projects) {
+      iProjs.add(IsarProject.fromProject(project));
     }
 
     final isar = await database;
@@ -110,7 +117,7 @@ class IsarService {
 }
 
 @Riverpod(keepAlive: true)
-IsarService isarService(IsarServiceRef ref) {
-  final service = IsarService();
+IsarCacheService isarCacheService(IsarCacheServiceRef ref) {
+  final service = IsarCacheService();
   return service;
 }

@@ -36,6 +36,60 @@
                 "type": "String"
             }
         }
-    }
+    },
 
+    "years_ago":  "{value,plural, =1{a year ago}other{{value} years ago}}",
+    "@years_ago": {
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "months_ago":  "{value,plural, =1{a month ago}other{{value} months ago}}",
+    "@months_ago": {
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "week_ago":  "{value,plural, =1{a week ago}other{{value} week ago}}",
+    "@week_ago": {
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "days_ago":  "{value,plural, =1{a day ago}other{{value} days ago}}",
+    "@days_ago": {
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "hours_ago":  "{value,plural, =1{an hour ago}other{{value} hours ago}}",
+    "@hours_ago": {
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "minutes_ago":  "{value,plural, =1{a minute ago}other{{value} minutes ago}}",
+    "@minutes_ago": {
+        "placeholders": {
+            "value": {
+                "type": "int"
+            }
+        }
+    },
+    "just_now":  "just now",
+    "content_warnings_for": "This post has content warnings for: ",
+    "hidden_adult_post":"This post contains 18+ content. We're hiding it according to your content preferences.",
+    "show_post": "show post",
+    "hide_post": "hide post"
+    
   }

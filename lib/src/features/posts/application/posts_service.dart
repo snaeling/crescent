@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:crescent/src/features/posts/domain/isar_post.dart';
 import 'package:crescent/src/utils/isar.dart';
 import 'package:cohost_api/cohost.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,18 +15,10 @@ class PostsService {
 
   StreamController<Post> controller = StreamController<Post>.broadcast();
 
-  Future<List<Post>> fetchHomeFeed(int page) async {
-    final api = _ref.read(userRepositoryProvider).api;
-    final res = await api.projects.getPosts('vogon', page);
-    _ref.watch(isarServiceProvider).savePosts(res);
-
-    return res;
-  }
-
-  Future<List<Post>> fetchHomeFeedTest([DateTime? timestamp, int? skip]) async {
+  Future<List<Post>> fetchHomeFeed([DateTime? timestamp, int? skip]) async {
     final api = _ref.read(userRepositoryProvider).api;
     final res = await api.posts.htmlDashboard(timestamp, skip);
-    _ref.watch(isarServiceProvider).savePosts(res);
+    _ref.watch(isarCacheServiceProvider).savePosts(res);
 
     return res;
   }
@@ -36,7 +27,7 @@ class PostsService {
       [DateTime? timestamp, int? page]) async {
     final api = _ref.read(userRepositoryProvider).api;
     final res = await api.posts.htmlTagged(tag, timestamp, page);
-    _ref.watch(isarServiceProvider).savePosts(res);
+    _ref.watch(isarCacheServiceProvider).savePosts(res);
 
     return res;
   }
@@ -44,14 +35,14 @@ class PostsService {
   Future<List<Post>> fetchProfilePosts(String handle, int page) async {
     final api = _ref.read(userRepositoryProvider).api;
     final res = await api.posts.getProfilePosts(page, handle);
-    _ref.watch(isarServiceProvider).savePosts(res);
+    _ref.watch(isarCacheServiceProvider).savePosts(res);
     return res;
   }
 
   Future<SinglePost> fetchPost(String handle, int postId) async {
     final api = _ref.read(userRepositoryProvider).api;
     final res = await api.posts.getSinglePost(handle, postId);
-    _ref.watch(isarServiceProvider).savePost(res.post);
+    _ref.watch(isarCacheServiceProvider).savePost(res.post);
     return res;
   }
 }
@@ -68,9 +59,26 @@ Future<SinglePost> fetchSinglePost(
   return service.fetchPost(handle, id);
 }
 
-@riverpod
-Future<List<Post>> fetchProfilePosts(
-    FetchProfilePostsRef ref, String handle, int id) async {
+@Riverpod(keepAlive: true)
+Future<List<Post>> fetchProfilePosts(FetchProfilePostsRef ref,
+    {required String handle, required int page}) async {
   PostsService service = ref.watch(postsServiceProvider);
-  return service.fetchProfilePosts(handle, id);
+  final posts = await service.fetchProfilePosts(handle, page);
+  return posts;
+}
+
+@Riverpod(keepAlive: true)
+Future<List<Post>> fetchHomeFeedPosts(FetchHomeFeedPostsRef ref,
+    {DateTime? timestamp, int? skip}) async {
+  PostsService service = ref.watch(postsServiceProvider);
+  final posts = await service.fetchHomeFeed(timestamp, skip);
+  return posts;
+}
+
+@Riverpod(keepAlive: true)
+Future<List<Post>> fetchTaggedPosts(FetchTaggedPostsRef ref,
+    {required String tag, DateTime? timestamp, int? skip}) async {
+  PostsService service = ref.watch(postsServiceProvider);
+  final posts = await service.fetchPostsByTag(tag, timestamp, skip);
+  return posts;
 }

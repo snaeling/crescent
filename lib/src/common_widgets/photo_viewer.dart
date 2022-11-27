@@ -12,36 +12,35 @@ class PhotoViewer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SafeArea(
-      child: Scaffold(
-        body: Stack(
-          children: [
-            PhotoView(
-              backgroundDecoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
-              ),
-              imageProvider: CachedNetworkImageProvider(url),
+    return Scaffold(
+      body: Stack(
+        children: [
+          PhotoView(
+            backgroundDecoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.background,
             ),
-            ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 50.0,
-                  decoration: BoxDecoration(
-                      color: Colors.grey.shade200.withOpacity(0.5)),
+            imageProvider: CachedNetworkImageProvider(url),
+          ),
+          ClipRect(
+            child: SizedBox(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 50.0,
+                child: SafeArea(
                   child: Row(
                     children: [
                       IconButton(
-                          onPressed: () => Navigator.of(context).maybePop(),
-                          icon: const Icon(Icons.arrow_back))
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        icon: const Icon(Icons.arrow_back),
+                        color: Colors.white,
+                      )
                     ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -118,18 +118,18 @@ class FetchSinglePostFamily extends Family<AsyncValue<SinglePost>> {
   String? get name => r'fetchSinglePostProvider';
 }
 
-String $fetchProfilePostsHash() => r'3c3fd2e09ec888053a886559f31ad6f999eb13e7';
+String $fetchProfilePostsHash() => r'0e02ead5345e02277352792fbefc24e5eb8975d5';
 
 /// See also [fetchProfilePosts].
-class FetchProfilePostsProvider extends AutoDisposeFutureProvider<List<Post>> {
-  FetchProfilePostsProvider(
-    this.handle,
-    this.id,
-  ) : super(
+class FetchProfilePostsProvider extends FutureProvider<List<Post>> {
+  FetchProfilePostsProvider({
+    required this.handle,
+    required this.page,
+  }) : super(
           (ref) => fetchProfilePosts(
             ref,
-            handle,
-            id,
+            handle: handle,
+            page: page,
           ),
           from: fetchProfilePostsProvider,
           name: r'fetchProfilePostsProvider',
@@ -140,26 +140,26 @@ class FetchProfilePostsProvider extends AutoDisposeFutureProvider<List<Post>> {
         );
 
   final String handle;
-  final int id;
+  final int page;
 
   @override
   bool operator ==(Object other) {
     return other is FetchProfilePostsProvider &&
         other.handle == handle &&
-        other.id == id;
+        other.page == page;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, handle.hashCode);
-    hash = _SystemHash.combine(hash, id.hashCode);
+    hash = _SystemHash.combine(hash, page.hashCode);
 
     return _SystemHash.finish(hash);
   }
 }
 
-typedef FetchProfilePostsRef = AutoDisposeFutureProviderRef<List<Post>>;
+typedef FetchProfilePostsRef = FutureProviderRef<List<Post>>;
 
 /// See also [fetchProfilePosts].
 final fetchProfilePostsProvider = FetchProfilePostsFamily();
@@ -167,23 +167,23 @@ final fetchProfilePostsProvider = FetchProfilePostsFamily();
 class FetchProfilePostsFamily extends Family<AsyncValue<List<Post>>> {
   FetchProfilePostsFamily();
 
-  FetchProfilePostsProvider call(
-    String handle,
-    int id,
-  ) {
+  FetchProfilePostsProvider call({
+    required String handle,
+    required int page,
+  }) {
     return FetchProfilePostsProvider(
-      handle,
-      id,
+      handle: handle,
+      page: page,
     );
   }
 
   @override
-  AutoDisposeFutureProvider<List<Post>> getProviderOverride(
+  FutureProvider<List<Post>> getProviderOverride(
     covariant FetchProfilePostsProvider provider,
   ) {
     return call(
-      provider.handle,
-      provider.id,
+      handle: provider.handle,
+      page: provider.page,
     );
   }
 
@@ -195,4 +195,170 @@ class FetchProfilePostsFamily extends Family<AsyncValue<List<Post>>> {
 
   @override
   String? get name => r'fetchProfilePostsProvider';
+}
+
+String $fetchHomeFeedPostsHash() => r'fd9b8747836d540636b30181ec96827c3eb4efca';
+
+/// See also [fetchHomeFeedPosts].
+class FetchHomeFeedPostsProvider extends FutureProvider<List<Post>> {
+  FetchHomeFeedPostsProvider({
+    this.timestamp,
+    this.skip,
+  }) : super(
+          (ref) => fetchHomeFeedPosts(
+            ref,
+            timestamp: timestamp,
+            skip: skip,
+          ),
+          from: fetchHomeFeedPostsProvider,
+          name: r'fetchHomeFeedPostsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : $fetchHomeFeedPostsHash,
+        );
+
+  final DateTime? timestamp;
+  final int? skip;
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchHomeFeedPostsProvider &&
+        other.timestamp == timestamp &&
+        other.skip == skip;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, timestamp.hashCode);
+    hash = _SystemHash.combine(hash, skip.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+typedef FetchHomeFeedPostsRef = FutureProviderRef<List<Post>>;
+
+/// See also [fetchHomeFeedPosts].
+final fetchHomeFeedPostsProvider = FetchHomeFeedPostsFamily();
+
+class FetchHomeFeedPostsFamily extends Family<AsyncValue<List<Post>>> {
+  FetchHomeFeedPostsFamily();
+
+  FetchHomeFeedPostsProvider call({
+    DateTime? timestamp,
+    int? skip,
+  }) {
+    return FetchHomeFeedPostsProvider(
+      timestamp: timestamp,
+      skip: skip,
+    );
+  }
+
+  @override
+  FutureProvider<List<Post>> getProviderOverride(
+    covariant FetchHomeFeedPostsProvider provider,
+  ) {
+    return call(
+      timestamp: provider.timestamp,
+      skip: provider.skip,
+    );
+  }
+
+  @override
+  List<ProviderOrFamily>? get allTransitiveDependencies => null;
+
+  @override
+  List<ProviderOrFamily>? get dependencies => null;
+
+  @override
+  String? get name => r'fetchHomeFeedPostsProvider';
+}
+
+String $fetchTaggedPostsHash() => r'071ee324989a09a04ea7119023e4f6a244c4455f';
+
+/// See also [fetchTaggedPosts].
+class FetchTaggedPostsProvider extends FutureProvider<List<Post>> {
+  FetchTaggedPostsProvider({
+    required this.tag,
+    this.timestamp,
+    this.skip,
+  }) : super(
+          (ref) => fetchTaggedPosts(
+            ref,
+            tag: tag,
+            timestamp: timestamp,
+            skip: skip,
+          ),
+          from: fetchTaggedPostsProvider,
+          name: r'fetchTaggedPostsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : $fetchTaggedPostsHash,
+        );
+
+  final String tag;
+  final DateTime? timestamp;
+  final int? skip;
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchTaggedPostsProvider &&
+        other.tag == tag &&
+        other.timestamp == timestamp &&
+        other.skip == skip;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, tag.hashCode);
+    hash = _SystemHash.combine(hash, timestamp.hashCode);
+    hash = _SystemHash.combine(hash, skip.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+typedef FetchTaggedPostsRef = FutureProviderRef<List<Post>>;
+
+/// See also [fetchTaggedPosts].
+final fetchTaggedPostsProvider = FetchTaggedPostsFamily();
+
+class FetchTaggedPostsFamily extends Family<AsyncValue<List<Post>>> {
+  FetchTaggedPostsFamily();
+
+  FetchTaggedPostsProvider call({
+    required String tag,
+    DateTime? timestamp,
+    int? skip,
+  }) {
+    return FetchTaggedPostsProvider(
+      tag: tag,
+      timestamp: timestamp,
+      skip: skip,
+    );
+  }
+
+  @override
+  FutureProvider<List<Post>> getProviderOverride(
+    covariant FetchTaggedPostsProvider provider,
+  ) {
+    return call(
+      tag: provider.tag,
+      timestamp: provider.timestamp,
+      skip: provider.skip,
+    );
+  }
+
+  @override
+  List<ProviderOrFamily>? get allTransitiveDependencies => null;
+
+  @override
+  List<ProviderOrFamily>? get dependencies => null;
+
+  @override
+  String? get name => r'fetchTaggedPostsProvider';
 }

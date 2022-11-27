@@ -29,13 +29,14 @@ class _SystemHash {
   }
 }
 
-String $isarServiceHash() => r'98b54c8ec132e78bb8ffa9391c1b430bed5f311a';
+String $isarCacheServiceHash() => r'a254dec3c7113a5f92d5694fc031823a21396a84';
 
-/// See also [isarService].
-final isarServiceProvider = Provider<IsarService>(
-  isarService,
-  name: r'isarServiceProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : $isarServiceHash,
+/// See also [isarCacheService].
+final isarCacheServiceProvider = Provider<IsarCacheService>(
+  isarCacheService,
+  name: r'isarCacheServiceProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : $isarCacheServiceHash,
 );
-typedef IsarServiceRef = ProviderRef<IsarService>;
+typedef IsarCacheServiceRef = ProviderRef<IsarCacheService>;

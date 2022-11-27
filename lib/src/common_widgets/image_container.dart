@@ -72,7 +72,7 @@ class EggImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final body = CachedNetworkImage(
       imageUrl: url,
-      fit: BoxFit.cover,
+      fit: BoxFit.contain,
       memCacheWidth: cacheWidth ?? MediaQuery.of(context).size.width ~/ 1.1,
       placeholder: (context, url) =>
           const Center(child: CircularProgressIndicator()),
@@ -90,7 +90,7 @@ class EggImage extends StatelessWidget {
             : body
         : SvgPicture.network(
             url,
-            fit: BoxFit.cover,
+            fit: BoxFit.contain,
           );
   }
 }

@@ -1,10 +1,15 @@
+import 'package:crescent/src/features/authentication/application/auth_provider.dart';
+import 'package:crescent/src/features/authentication/data/user_repository.dart';
 import 'package:crescent/src/features/posts/application/feed_provider.dart';
+import 'package:crescent/src/features/posts/presentation/select_page_dialog.dart';
 import 'package:crescent/src/utils/localized_build_context.dart';
 import 'package:crescent/src/utils/theme_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'post_card.dart';
@@ -12,7 +17,6 @@ import 'post_card.dart';
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
-  static const String tag = 'The Cohost Global Feed';
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final buttonController = useScrollController();
@@ -31,9 +35,9 @@ class HomeScreen extends HookConsumerWidget {
 
       return null;
     }, [buttonController]);
-    final feed = ref.watch(tagFeedProvider(tag).notifier);
-    final page = ref.watch(tagFeedProvider(tag)).page;
-    final isLoading = ref.watch(tagFeedProvider(tag)).isLoading;
+    final feed = ref.watch(homeFeedProvider.notifier);
+    final page = ref.watch(homeFeedProvider).page;
+    final isLoading = ref.watch(homeFeedProvider).isLoading;
 
     return Scaffold(
       body: RefreshIndicator(
@@ -122,17 +126,34 @@ class HomeScreen extends HookConsumerWidget {
                     ? Row(
                         children: [
                           FilledButton.tonal(
-                            onPressed: () {
-                              feed.previousPage();
-                            },
-                            child: const Icon(Icons.arrow_back),
-                          ),
+                              onPressed: () {
+                                feed.previousPage();
+                              },
+                              style: FilledButton.styleFrom(
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer),
+                              child: const Icon(Icons.arrow_back)),
                           FilledButton.tonal(
-                              onPressed: () {}, child: Text(page.toString())),
+                            onPressed: () => showDialog(
+                              context: context,
+                              builder: (context) => SelectPageDialog(
+                                  currentPage: page, onSelect: feed.toPage),
+                            ),
+                            style: FilledButton.styleFrom(
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer),
+                            child: Text(page.toString()),
+                          ),
                           FilledButton.tonal(
                             onPressed: () {
                               feed.nextPage();
                             },
+                            style: FilledButton.styleFrom(
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer),
                             child: const Icon(Icons.arrow_forward),
                           ),
                         ],
@@ -162,7 +183,7 @@ class Feed extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final posts = ref.watch(tagFeedProvider(HomeScreen.tag)).posts;
+    final posts = ref.watch(homeFeedProvider).posts;
     return SliverPadding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0),
       sliver: SliverList(
