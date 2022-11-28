@@ -54,8 +54,8 @@
             }
         }
     },
-    "week_ago":  "{value,plural, =1{a week ago}other{{value} week ago}}",
-    "@week_ago": {
+    "weeks_ago":  "{value,plural, =1{a week ago}other{{value} weeks ago}}",
+    "@weeks_ago": {
         "placeholders": {
             "value": {
                 "type": "int"

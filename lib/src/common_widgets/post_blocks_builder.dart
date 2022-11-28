@@ -108,7 +108,7 @@ class PostBlockWidget extends HookWidget {
       // TODO: three states
       if (block.type == PostBlockType.markdown && !css.value) {
         final html = RegExp(r'<\/?[a-z][\s\S]*>', caseSensitive: false);
-        final content = block.content!;
+        final content = block.markdown!.content!;
         if (html.hasMatch(content) && content.length < 3000) {
           keepAlive.value = true;
           css.value = true;
@@ -122,7 +122,7 @@ class PostBlockWidget extends HookWidget {
 
     switch (block.type) {
       case PostBlockType.markdown:
-        final content = block.content!;
+        final content = block.markdown!.content!;
         // TODO: have an option to open CSS crimes in webview
         // TODO: better CSS crime detecion
         if (css.value) {
@@ -161,9 +161,9 @@ class PostBlockWidget extends HookWidget {
 
       case PostBlockType.attachment:
         keepAlive.value = true;
-        return ImageContainer(block.previewUrl ?? "");
+        return ImageContainer(block.attachment!.previewURL ?? "");
       default:
-        return Text(block.content ?? "");
+        return Text(block.markdown?.content ?? "");
     }
   }
 }

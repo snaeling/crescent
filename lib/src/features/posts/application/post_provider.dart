@@ -84,7 +84,7 @@ class PostNotifier extends StateNotifier<PostState> {
         var block = postDisplayed.blocks![index];
         estimatedLength += block.type == PostBlockType.attachment
             ? 700
-            : block.content!.length;
+            : block.markdown!.content!.length;
         if (estimatedLength > 1700) {
           // if this block is the last block, dont truncate
           truncateAt = postDisplayed.blocks!.length > index ? index : 0;

@@ -11,7 +11,7 @@ extension DateTimeExtension on DateTime {
     } else if ((difference.inDays / 30).floor() >= 1) {
       return loc.months_ago((difference.inDays / 30).floor());
     } else if ((difference.inDays / 7).floor() >= 1) {
-      return loc.week_ago((difference.inDays / 7).floor());
+      return loc.weeks_ago((difference.inDays / 7).floor());
     } else if (difference.inDays >= 1) {
       return loc.days_ago(difference.inDays);
     } else if (difference.inHours >= 1) {

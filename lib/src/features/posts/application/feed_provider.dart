@@ -54,7 +54,7 @@ class FeedNotifier extends StateNotifier<FeedState> {
   }
 
   nextPage() async {
-    if (state.isDone) return;
+    //if (state.isDone) return;
     final newPage = state.page + 1;
     state = state.copyWith(
         isLoading: true, page: newPage, isDone: false, isError: false);
@@ -71,7 +71,7 @@ class FeedNotifier extends StateNotifier<FeedState> {
   }
 
   toPage(int page) async {
-    if (state.isDone && page > state.page) return;
+    //if (state.isDone && page > state.page) return;
     final newPage = page;
     state = state.copyWith(
         isLoading: true, page: newPage, isDone: false, isError: false);
