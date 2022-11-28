@@ -77,6 +77,11 @@ class UserRepository {
     return res;
   }
 
+  Future<UserState> getUserState(String handle) async {
+    var res = await api.user.userState(handle);
+    return res;
+  }
+
   _init() {}
   //void dispose() => _authState.close();
 }

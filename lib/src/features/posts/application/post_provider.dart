@@ -1,4 +1,5 @@
 import 'package:cohost_api/cohost.dart';
+import 'package:crescent/src/features/authentication/application/auth_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -32,6 +33,11 @@ class PostNotifier extends StateNotifier<PostState> {
   final Post post;
 
   _init() async {
+    // Get our prefs, generate factory default prefs if we don't have them.
+    UserDisplayPrefs? prefs = ref.read(authProvider).userState?.displayPrefs;
+    prefs = prefs ?? const UserDisplayPrefs();
+
+    // default post variables
     var estimatedLength = 0;
     var shareDiscongruence = 0;
     var truncateAt = 0;
@@ -40,11 +46,6 @@ class PostNotifier extends StateNotifier<PostState> {
     Post postDisplayed = post;
     bool showPost = true;
     bool showPostToggle = false;
-
-    // not accurate because shares remain in the share tree, but it's good
-    // enough for now
-
-    late final int hiddenPosts;
 
     if (isShare) {
       post.shareTree.reversed.toList().forEach((element) {
@@ -93,15 +94,30 @@ class PostNotifier extends StateNotifier<PostState> {
       }
     }
 
+    // TODO: remove hidden posts from hide count
     shareDiscongruence = shareDiscongruence > 0 ? 1 : 0;
-    hiddenPosts = post.shareTree.isNotEmpty
+    int hiddenPosts = post.shareTree.isNotEmpty
         ? (post.blocks!.isNotEmpty
             ? (post.shareTree.length - shareDiscongruence)
             : (post.shareTree.length - 1 - shareDiscongruence))
         : 0;
 
-    if (postDisplayed.cws.isNotEmpty || postDisplayed.effectiveAdultContent) {
+    bool autoExandCw = true;
+
+    for (String postCw in postDisplayed.cws) {
+      if (prefs.autoexpandCWs.contains(postCw)) {
+        continue;
+      }
+      autoExandCw = false;
+    }
+
+    if ((postDisplayed.cws.isNotEmpty && !autoExandCw) ||
+        (postDisplayed.effectiveAdultContent &&
+            prefs.explicitlyCollapseAdultContent)) {
       showPost = false;
+      showPostToggle = true;
+    }
+    if (postDisplayed.effectiveAdultContent) {
       showPostToggle = true;
     }
 

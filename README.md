@@ -3,7 +3,7 @@ WIP mobile app for cohost.org
 
 Not really usable at the moment, but can view home feed, tags, projects, comments, etc, as well as search for tags and projects.
 
-Content warnings/adult posts are hidden, but user preferences do not affect this behavior yet.
+Server-side user preferences are used to conditionally hide content warnings and adult posts, viewing bookmarks is also available.
  
 
 ## API

@@ -114,6 +114,7 @@ class CommentWidget extends StatelessWidget {
                 Wrap(
                   children: [
                     ExpandedPostCardProject(
+                      timestamp: comment.comment.postedAtISO,
                       project: comment.poster,
                       showImage: false,
                     ),

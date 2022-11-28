@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cohost_api/cohost.dart';
 import 'package:crescent/src/features/authentication/data/user_repository.dart';
+import 'package:crescent/src/utils/secure_storage_service.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -43,17 +44,17 @@ class LogInController extends StateNotifier<AsyncValue<void>> {
 }
 
 @freezed
-class UserState with _$UserState {
-  const factory UserState({
-    User? user,
-    @Default(false) bool loggedIn,
-  }) = _UserState;
+class AppUserState with _$AppUserState {
+  const factory AppUserState(
+      {User? user,
+      @Default(false) bool loggedIn,
+      UserState? userState}) = _AppUserState;
 
-  const UserState._();
+  const AppUserState._();
 }
 
-class AuthNotifier extends StateNotifier<UserState> {
-  AuthNotifier(this.ref) : super(const UserState()) {
+class AuthNotifier extends StateNotifier<AppUserState> {
+  AuthNotifier(this.ref) : super(const AppUserState()) {
     _init();
   }
 
@@ -62,19 +63,28 @@ class AuthNotifier extends StateNotifier<UserState> {
 
   _init() async {
     User auth = await ref.watch(userRepositoryProvider).loggedIn();
-    state = state.copyWith(loggedIn: auth.loggedIn);
+    state = state.copyWith(loggedIn: auth.loggedIn, user: auth);
+    UserState userState = await ref
+        .watch(userRepositoryProvider)
+        .getUserState(state.user!.projectHandle!);
+    state = state.copyWith(userState: userState);
     Timer.periodic(const Duration(seconds: 30), (timer) async {
+      // TODO: this must only run in the foreground
       auth = await ref.watch(userRepositoryProvider).loggedIn();
       state = state.copyWith(loggedIn: auth.loggedIn);
-      print(state.loggedIn);
     });
   }
 
   setAuthState(bool bool) {
     state = state.copyWith(loggedIn: bool);
   }
+
+  logOut() async {
+    state = state.copyWith(user: null, loggedIn: false);
+    ref.watch(secureStorageServiceProvider).retireCookie();
+  }
 }
 
-final authProvider = StateNotifierProvider<AuthNotifier, UserState>((ref) {
+final authProvider = StateNotifierProvider<AuthNotifier, AppUserState>((ref) {
   return AuthNotifier(ref);
 });

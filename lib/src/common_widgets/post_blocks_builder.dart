@@ -1,10 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cohost_api/cohost.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:photo_view/photo_view.dart';
 
 import 'egg_markdown.dart';
 import 'image_container.dart';
@@ -88,9 +89,13 @@ class PostBlockWidget extends HookWidget {
   final bool markdownBody;
   Html _calculate(String html) {
     return Html(
-      data: md.markdownToHtml(html),
-      key: const ValueKey(1),
-    );
+        data: md.markdownToHtml(html),
+        key: const ValueKey(1),
+        onImageTap: (url, context, attributes, element) {
+          if (url != null) {
+            PhotoView(imageProvider: CachedNetworkImageProvider(url));
+          }
+        });
   }
 
   @override

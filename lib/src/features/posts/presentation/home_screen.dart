@@ -1,9 +1,7 @@
-import 'package:crescent/src/features/authentication/application/auth_provider.dart';
-import 'package:crescent/src/features/authentication/data/user_repository.dart';
+import 'package:crescent/src/common_widgets/global_error_display.dart';
 import 'package:crescent/src/features/posts/application/feed_provider.dart';
 import 'package:crescent/src/features/posts/presentation/select_page_dialog.dart';
 import 'package:crescent/src/utils/localized_build_context.dart';
-import 'package:crescent/src/utils/secure_storage_service.dart';
 import 'package:crescent/src/utils/theme_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -168,7 +166,9 @@ class HomeScreen extends HookConsumerWidget {
             child: FloatingActionButton(
               heroTag: null,
               onPressed: () {
-                ref.watch(secureStorageServiceProvider).retireCookie();
+                GlobalErrorService().showMessage(GlobalError(
+                    title: "Test Error!", body: "Test body message"));
+                //ref.watch(secureStorageServiceProvider).retireCookie();
               },
               child: const Icon(Icons.edit),
             ),

@@ -24,18 +24,19 @@ class PostCard extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final postDisplayed =
         ref.watch(postProvider(post).select((post) => post.postDisplayed!));
+    final strippedPost = postDisplayed.copyWith(shareTree: []);
     final isShare =
-        ref.watch(postProvider(post).select((post) => post.isShare));
+        ref.watch(postProvider(strippedPost).select((post) => post.isShare));
     final crime = ref.watch(postProvider(post).select((post) => post.crime));
     final truncateAt =
-        ref.watch(postProvider(post).select((post) => post.truncateAt));
-    final hiddenPosts =
-        ref.watch(postProvider(post).select((post) => post.hiddenPosts));
-    final showPostToggle =
-        ref.watch(postProvider(post).select((post) => post.showPostToggle));
+        ref.watch(postProvider(strippedPost).select((post) => post.truncateAt));
+    final hiddenPosts = ref
+        .watch(postProvider(strippedPost).select((post) => post.hiddenPosts));
+    final showPostToggle = ref.watch(
+        postProvider(strippedPost).select((post) => post.showPostToggle));
     final showPost =
-        ref.watch(postProvider(post).select((post) => post.showPost));
-    final postNotifier = ref.watch(postProvider(post).notifier);
+        ref.watch(postProvider(strippedPost).select((post) => post.showPost));
+    final postNotifier = ref.watch(postProvider(strippedPost).notifier);
 
     return GestureDetector(
       onTap: () => context.router.push(SinglePostRoute(

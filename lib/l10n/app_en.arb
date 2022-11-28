@@ -90,6 +90,11 @@
     "content_warnings_for": "This post has content warnings for: ",
     "hidden_adult_post":"This post contains 18+ content. We're hiding it according to your content preferences.",
     "show_post": "show post",
-    "hide_post": "hide post"
+    "hide_post": "hide post",
+    "add_to_bookmarks":"Add to bookmarks",
+    "remove_from_bookmarks":"Remove from bookmarks",
+    "bookmark":"Bookmark",
+    "bookmarks":"Bookmarks",
+    "close":"Close"
     
   }

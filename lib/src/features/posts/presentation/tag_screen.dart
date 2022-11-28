@@ -23,6 +23,7 @@ class TagScreen extends HookConsumerWidget {
         child: RefreshIndicator(
           onRefresh: () => feed.refresh(),
           child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
             controller: scrollController,
             slivers: [
               SliverAppBar(

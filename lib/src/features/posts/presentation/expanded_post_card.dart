@@ -37,7 +37,10 @@ class ExpandedPostCard extends HookConsumerWidget {
                   if (index == 0) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ExpandedPostCardProject(post: post),
+                      child: ExpandedPostCardProject(
+                        project: post.postingProject,
+                        timestamp: post.publishedAt,
+                      ),
                     );
                   }
                   if (index == 1) {
@@ -95,19 +98,20 @@ class ExpandedPostCard extends HookConsumerWidget {
 
 class ExpandedPostCardProject extends StatelessWidget {
   const ExpandedPostCardProject(
-      {this.post, this.project, super.key, this.showImage = true});
-  final Post? post;
-  final Project? project;
+      {this.timestamp,
+      required this.project,
+      super.key,
+      this.showImage = true});
+  final DateTime? timestamp;
+  final Project project;
   final bool showImage;
   @override
   Widget build(BuildContext context) {
-    final proj = project ?? post!.postingProject;
-
     return Row(
       children: [
         if (showImage) ...[
           Avatar(
-            proj,
+            project,
             size: 45,
           ),
           const SizedBox(width: 10),
@@ -116,22 +120,22 @@ class ExpandedPostCardProject extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (post != null)
+              if (timestamp != null)
                 Text(
-                  post!.publishedAt.timeAgo(),
+                  timestamp!.timeAgo(),
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall!
                       .copyWith(fontWeight: FontWeight.bold, height: 1.15),
                   overflow: TextOverflow.ellipsis,
                 ),
-              Text(proj.displayName ?? proj.handle,
+              Text(project.displayName ?? project.handle,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium!
                       .copyWith(fontWeight: FontWeight.bold, height: 1.15)),
               Text(
-                '@${proj.handle} ${(proj.pronouns != null && proj.pronouns != "") ? "• ${proj.pronouns!}" : ""}',
+                '@${project.handle} ${(project.pronouns != null && project.pronouns != "") ? "• ${project.pronouns!}" : ""}',
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
