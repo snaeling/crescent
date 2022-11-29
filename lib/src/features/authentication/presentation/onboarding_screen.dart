@@ -1,11 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:crescent/src/features/authentication/application/auth_provider.dart';
-import 'package:crescent/src/features/authentication/data/user_repository.dart';
 import 'package:crescent/src/routes/app_router.gr.dart';
-import 'package:crescent/src/utils/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class OnboardingScreen extends HookConsumerWidget {
@@ -168,7 +165,7 @@ class OnboardLogin extends HookConsumerWidget {
             SnackBar(content: Text(state.error.toString())),
           );
         } else if (state.hasValue) {
-          context.router.replaceNamed('/dashboard/home');
+          context.router.replace(const NavigationRoute());
         }
       },
     );
@@ -241,7 +238,7 @@ class OnboardLogin extends HookConsumerWidget {
                   const Spacer(),
                   ElevatedButton(
                     onPressed: () {
-                      context.router.replaceNamed('/dashboard/home');
+                      context.router.replace(const NavigationRoute());
                     },
                     child: const Text("I'd rather be a guest"),
                   ),

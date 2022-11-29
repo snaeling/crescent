@@ -9,7 +9,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'post_card.dart';
+import 'post_card/post_card.dart';
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});

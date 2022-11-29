@@ -6,26 +6,31 @@ import 'package:crescent/src/features/posts/presentation/home_screen.dart';
 import 'package:crescent/src/features/search/presentation/search_screen.dart';
 import 'package:crescent/src/routes/navigation_scaffold.dart';
 import 'package:crescent/src/routes/spash_screen.dart';
+import 'package:flutter/material.dart';
 
-import '../features/onboarding/presentation/onboarding_screen.dart';
+import '../features/authentication/presentation/notifications_screen.dart';
+import '../features/authentication/presentation/onboarding_screen.dart';
 import '../features/posts/presentation/single_post_screen.dart';
 import '../features/posts/presentation/tag_screen.dart';
+import '../features/projects/presentation/profile_screen.dart';
 import '../features/projects/presentation/project_screen.dart';
 
 @MaterialAutoRouter(
   replaceInRouteName: 'Screen,Route',
   routes: <AutoRoute>[
     AutoRoute(
-      path: '/',
+      path: '/splash',
       page: SplashScreen,
     ),
     CustomRoute(
       transitionsBuilder: TransitionsBuilders.fadeIn,
-      path: '/dashboard',
+      path: '/',
       page: NavigationScreen,
       children: [
         AutoRoute(path: 'home', page: HomeScreen),
         AutoRoute(path: 'search', page: SearchScreen),
+        AutoRoute(path: 'notifications', page: NotificationsScreen),
+        AutoRoute(path: 'profile', page: ProfileScreen),
       ],
     ),
     AutoRoute(

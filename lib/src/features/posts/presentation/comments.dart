@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../../common_widgets/egg_markdown.dart';
 import '../../../common_widgets/image_container.dart';
-import 'expanded_post_card.dart';
+import 'expanded_post_card/expanded_post_card.dart';
 
 class CommentTree extends HookWidget {
   const CommentTree(
@@ -90,59 +90,78 @@ class CommentWidget extends StatelessWidget {
     final newLines = RegExp(r'<br\s*[\/]?>');
     final parsedComment = comment.comment.body.replaceAll(newLines, "\n");
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      padding: const EdgeInsets.symmetric(vertical: 0),
+      child: Stack(
         children: [
-          SizedBox(
-            width: depth * 15,
-          ),
-          Avatar(
-            comment.poster,
-            size: depth == 0 ? 45 : 35,
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Flexible(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  children: [
-                    ExpandedPostCardProject(
-                      timestamp: comment.comment.postedAtISO,
-                      project: comment.poster,
-                      showImage: false,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: EggMarkdown(
-                        data: parsedComment,
-                        selectable: true,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'reply to @${comment.poster.handle}',
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {},
-                      icon: const Icon(Icons.reply),
-                    ),
-                  ],
-                ),
-              ],
+          Positioned.fill(
+            left: (depth * 10) - 10,
+            child: Container(
+              alignment: Alignment.centerLeft,
+              // This child will fill full height, replace it with your leading widget
+              child: Container(
+                decoration: BoxDecoration(
+                    color: depth.isEven
+                        ? Theme.of(context).colorScheme.tertiary
+                        : Theme.of(context).colorScheme.primary,
+                    borderRadius: const BorderRadius.all(Radius.circular(5))),
+                width: 5,
+              ),
             ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              SizedBox(
+                width: depth * 10,
+              ),
+              Avatar(
+                comment.poster,
+                size: depth == 0 ? 45 : 35,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Flexible(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      children: [
+                        ExpandedPostCardProject(
+                          timestamp: comment.comment.postedAtISO,
+                          project: comment.poster,
+                          showImage: false,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: EggMarkdown(
+                            data: parsedComment,
+                            selectable: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'reply to @${comment.poster.handle}',
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {},
+                          icon: const Icon(Icons.reply),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),

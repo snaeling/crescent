@@ -20,11 +20,15 @@ The API is implemented separately in [cohost_dart](https://github.com/snaeling/c
 <img src="github/search.png " width="200" />
 <img src="github/content-warnings.png " width="200" />
 </p>
+<p float="left">
+<img src="github/comments.png " width="200" />
+</p>
+
 
 </br>
 
 ## CSS Crimes?
-Rudimentary architecture for embedded webviews, popup webviews and HTML parsing are implemented. Webviews aren't really pleasant within posts, but I plan to at least keep it as an option. The globe icon opens a webview dialog.
+HTML parsing tackles simple posts with little styling, but a prompt to view posts with complex styling in a webview is presented in such cases. Inline webviews are very unpleasant, especially on android devices below android 10, so it is not something I would like to implement.
 
 ## Framework, Architecture, etc
 The project is using the master Flutter branch.

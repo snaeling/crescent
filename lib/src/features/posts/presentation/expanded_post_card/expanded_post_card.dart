@@ -1,13 +1,14 @@
 import 'package:cohost_api/cohost.dart';
 import 'package:crescent/src/common_widgets/post_blocks_builder.dart';
+import 'package:crescent/src/features/posts/presentation/post_card/css_crime_button.dart';
 import 'package:crescent/src/utils/localized_build_context.dart';
 import 'package:crescent/src/utils/time_ago_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../common_widgets/image_container.dart';
-import '../application/post_provider.dart';
-import 'content_warnings.dart';
+import '../../../../common_widgets/image_container.dart';
+import '../../application/post_provider.dart';
+import '../content_warnings.dart';
 
 class ExpandedPostCard extends HookConsumerWidget {
   const ExpandedPostCard({required this.post, super.key});
@@ -44,15 +45,21 @@ class ExpandedPostCard extends HookConsumerWidget {
                     );
                   }
                   if (index == 1) {
-                    return Text(
-                      post.headline,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge!
-                          .copyWith(fontWeight: FontWeight.bold),
+                    return post.headline != ""
+                        ? Text(
+                            post.headline,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          )
+                        : Container();
+                  }
+                  if (crime) {
+                    return CssCrimeButton(
+                      url: postDisplayed.singlePostPageUrl,
                     );
                   }
-
                   if (showPost) {
                     var block = post.blocks![index - 2];
                     return Padding(
@@ -129,13 +136,16 @@ class ExpandedPostCardProject extends StatelessWidget {
                       .copyWith(fontWeight: FontWeight.bold, height: 1.15),
                   overflow: TextOverflow.ellipsis,
                 ),
-              Text(project.displayName ?? project.handle,
+              Text(
+                  (project.displayName?.isEmpty ?? true)
+                      ? '@${project.handle}'
+                      : project.displayName!,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium!
                       .copyWith(fontWeight: FontWeight.bold, height: 1.15)),
               Text(
-                '@${project.handle} ${(project.pronouns != null && project.pronouns != "") ? "• ${project.pronouns!}" : ""}',
+                '@${project.handle} ${(project.pronouns?.isEmpty ?? true) ? "" : "• ${project.pronouns!}"}',
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!

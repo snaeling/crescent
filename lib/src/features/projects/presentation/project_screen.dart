@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crescent/src/common_widgets/egg_markdown.dart';
 import 'package:crescent/src/common_widgets/image_container.dart';
 import 'package:crescent/src/features/posts/application/feed_provider.dart';
-import 'package:crescent/src/features/posts/presentation/post_card.dart';
+import 'package:crescent/src/features/posts/presentation/post_card/post_card.dart';
 import 'package:crescent/src/utils/isar.dart';
 import 'package:cohost_api/cohost.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,7 @@ class ProjectScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final proj = project ??
+    final Project proj = project ??
         ref
             .watch(isarCacheServiceProvider)
             .getProjectSync(handle)
@@ -233,7 +233,7 @@ class ProjectScreenHeader implements SliverPersistentHeaderDelegate {
         (project.headerPreviewURL == null || project.headerPreviewURL == "")
             ? null
             : project.headerPreviewURL;
-    final displayName = project.displayName ?? project.handle;
+    final displayName = project.displayName ?? '@${project.handle}';
 
     double scrollFactor({double factor = 1, bool inverse = false}) {
       if (inverse) {

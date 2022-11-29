@@ -4,6 +4,7 @@ import 'package:crescent/src/common_widgets/photo_viewer.dart';
 import 'package:crescent/src/routes/app_router.gr.dart';
 import 'package:cohost_api/cohost.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_avif/flutter_avif.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ImageContainer extends StatelessWidget {
@@ -27,10 +28,16 @@ class ImageContainer extends StatelessWidget {
 }
 
 class Avatar extends StatelessWidget {
-  const Avatar(this.project, {super.key, this.size = 50.0});
+  const Avatar(this.project,
+      {super.key,
+      this.size = 50.0,
+      this.clickable = true,
+      this.expandable = false});
 
   final Project project;
   final double size;
+  final bool clickable;
+  final bool expandable;
 
   @override
   Widget build(BuildContext context) {
@@ -38,23 +45,28 @@ class Avatar extends StatelessWidget {
     if (url == "" || url == null) {
       url = 'https://cohost.org/static/f0c56e99113f1a0731b4.svg';
     }
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => context.router
-          .push(ProjectRoute(handle: project.handle, project: project)),
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(300.0),
-          child: EggImage(
-            url: url,
-            cacheWidth: size.toInt(),
-            expandable: false,
-          ),
+
+    final avatar = SizedBox(
+      width: size,
+      height: size,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(300.0),
+        child: EggImage(
+          url: url,
+          cacheWidth: size.toInt(),
+          expandable: false,
         ),
       ),
     );
+    return clickable
+        ? GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => clickable
+                ? context.router.push(
+                    ProjectRoute(handle: project.handle, project: project))
+                : {},
+            child: avatar)
+        : avatar;
   }
 }
 
@@ -78,19 +90,29 @@ class EggImage extends StatelessWidget {
           const Center(child: CircularProgressIndicator()),
       fadeInDuration: Duration.zero,
     );
-
-    return !url.endsWith('.svg')
-        ? expandable
-            ? GestureDetector(
-                onTap: () => showDialog(
-                      context: context,
-                      builder: (context) => PhotoViewer(url: url),
-                    ),
-                child: body)
-            : body
-        : SvgPicture.network(
-            url,
-            fit: BoxFit.contain,
-          );
+    final sanitizedUrl = url.split(RegExp(r'[?#]'))[0];
+    try {
+      if (sanitizedUrl.endsWith('.svg')) {
+        return SvgPicture.network(
+          url,
+          fit: BoxFit.contain,
+        );
+      } else if (sanitizedUrl.endsWith('.avif')) {
+        return AvifImage.network(
+          url,
+          fit: BoxFit.contain,
+        );
+      }
+      return expandable
+          ? GestureDetector(
+              onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => PhotoViewer(url: url),
+                  ),
+              child: body)
+          : body;
+    } catch (e) {
+      return Image.asset('assets/images/icon/icon.png');
+    }
   }
 }

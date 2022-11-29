@@ -91,16 +91,17 @@ class FeedNotifier extends StateNotifier<FeedState> {
             .watch(postsServiceProvider)
             .fetchProfilePosts(_config.handle!, page);
         _successState(posts);
-      } else if (_config.tag != null || !auth) {
+      } else if (_config.tag != null) {
         posts = await ref.watch(postsServiceProvider).fetchPostsByTag(
-            auth ? _config.tag! : 'The Cohost Global Feed',
-            state.initiated,
-            page * _postsPerPage);
+            _config.tag!, state.initiated, page * _postsPerPage);
         _successState(posts);
       } else {
-        posts = await ref
-            .watch(postsServiceProvider)
-            .fetchHomeFeed(state.initiated!, page * _postsPerPage);
+        posts = !auth
+            ? await ref.watch(postsServiceProvider).fetchPostsByTag(
+                'The Cohost Global Feed', state.initiated, page * _postsPerPage)
+            : await ref
+                .watch(postsServiceProvider)
+                .fetchHomeFeed(state.initiated!, page * _postsPerPage);
         _successState(posts);
       }
     } catch (e) {

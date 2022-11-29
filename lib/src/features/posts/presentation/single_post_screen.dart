@@ -1,18 +1,14 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:crescent/src/common_widgets/egg_markdown.dart';
-import 'package:crescent/src/common_widgets/image_container.dart';
-import 'package:crescent/src/common_widgets/post_blocks_builder.dart';
 import 'package:crescent/src/features/posts/application/posts_service.dart';
-import 'package:crescent/src/features/posts/presentation/post_card.dart';
+import 'package:crescent/src/features/posts/presentation/post_card/post_card_footer.dart';
 import 'package:crescent/src/utils/localized_build_context.dart';
 import 'package:cohost_api/cohost.dart';
-import 'package:crescent/src/utils/time_ago_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'comments.dart';
-import 'expanded_post_card.dart';
+import 'expanded_post_card/expanded_post_card.dart';
 
 class SinglePostScreen extends HookConsumerWidget {
   const SinglePostScreen(

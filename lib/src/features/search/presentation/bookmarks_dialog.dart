@@ -1,9 +1,11 @@
 import 'package:crescent/src/features/authentication/application/auth_provider.dart';
-import 'package:crescent/src/features/posts/presentation/post_card.dart';
+import 'package:crescent/src/features/posts/presentation/post_card/post_card.dart';
 import 'package:crescent/src/utils/localized_build_context.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../posts/presentation/post_card/tags.dart';
 
 class BookmarksDialog extends ConsumerWidget {
   const BookmarksDialog({super.key});

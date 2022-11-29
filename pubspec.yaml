@@ -39,6 +39,10 @@ dependencies:
   html: ^0.15.1
   http: ^0.13.5
   path_provider: ^2.0.11
+  metadata_fetch:
+    git:
+      url: https://github.com/MagTuxGit/metadata_fetch.git
+  flutter_avif: ^1.0.0
   
   
   

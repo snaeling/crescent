@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cohost_api/cohost.dart';
+import 'package:crescent/src/common_widgets/link_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -89,6 +90,12 @@ class PostBlockWidget extends HookWidget {
   final bool markdownBody;
   Html _calculate(String html) {
     return Html(
+        style: {
+          "body": Style(
+            margin: Margins.zero,
+            padding: EdgeInsets.zero,
+          )
+        },
         data: md.markdownToHtml(html),
         key: const ValueKey(1),
         onImageTap: (url, context, attributes, element) {
@@ -110,7 +117,6 @@ class PostBlockWidget extends HookWidget {
     final computation = useState(Future<Html?>.value(null));
     final css = useState(false);
     useEffect(() {
-      // TODO: three states
       if (block.type == PostBlockType.markdown && !css.value) {
         final html = RegExp(r'<\/?[a-z][\s\S]*>', caseSensitive: false);
         final content = block.markdown!.content!;
@@ -127,9 +133,7 @@ class PostBlockWidget extends HookWidget {
 
     switch (block.type) {
       case PostBlockType.markdown:
-        final content = block.markdown!.content!;
-        // TODO: have an option to open CSS crimes in webview
-        // TODO: better CSS crime detecion
+        final content = block.markdown?.content ?? "";
         if (css.value) {
           return FutureBuilder(
             future: computation.value,
@@ -150,14 +154,16 @@ class PostBlockWidget extends HookWidget {
               );
             },
           );
-          // : const Center(
-          //     child: ListTile(
-          //     title: Text("Large CSS crime detected"),
-          //     subtitle: Text(
-          //         "Eggbird would have a really hard time displaying this section, sorry!"),
-          //     leading: Icon(Icons.warning),
-          //   ));
         }
+        try {
+          if (!content.contains(RegExp(r'[\[\]\s*]')) &&
+              Uri.parse(content).isAbsolute) {
+            return LinkPreview(url: content);
+          }
+        } catch (e) {
+          /*...*/
+        }
+
         return EggMarkdown(
           data: content,
           selectable: selectable,

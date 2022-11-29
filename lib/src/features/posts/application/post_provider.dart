@@ -130,6 +130,7 @@ class PostNotifier extends StateNotifier<PostState> {
       truncateAt: truncateAt,
       hiddenPosts: hiddenPosts,
       showPostToggle: showPostToggle,
+      isShare: isShare,
     );
   }
 

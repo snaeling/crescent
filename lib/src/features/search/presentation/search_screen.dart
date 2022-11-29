@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:crescent/src/features/posts/presentation/post_card.dart';
 import 'package:crescent/src/features/search/application/search_provider.dart';
 import 'package:crescent/src/features/search/presentation/bookmarks_dialog.dart';
 import 'package:crescent/src/features/search/presentation/project_card.dart';
@@ -8,6 +7,8 @@ import 'package:crescent/src/utils/localized_build_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../../posts/presentation/post_card/tags.dart';
 
 class SearchScreen extends HookConsumerWidget {
   SearchScreen({super.key});

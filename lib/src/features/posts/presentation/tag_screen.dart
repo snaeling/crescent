@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:crescent/src/features/posts/application/feed_provider.dart';
-import 'package:crescent/src/features/posts/presentation/post_card.dart';
+import 'package:crescent/src/features/posts/presentation/post_card/post_card.dart';
 import 'package:crescent/src/features/posts/presentation/select_page_dialog.dart';
 import 'package:flutter/material.dart';
 // ignore: implementation_imports

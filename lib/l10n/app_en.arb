@@ -95,6 +95,9 @@
     "remove_from_bookmarks":"Remove from bookmarks",
     "bookmark":"Bookmark",
     "bookmarks":"Bookmarks",
-    "close":"Close"
+    "close":"Close",
+    "unsupported_styling":"This post contains unsupported styling.",
+    "you_can_view_in_webview":"You can view the post in a webview to see it as intended.",
+    "open_webview":"Open webview"
     
   }

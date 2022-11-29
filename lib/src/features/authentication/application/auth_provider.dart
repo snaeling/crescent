@@ -62,16 +62,21 @@ class AuthNotifier extends StateNotifier<AppUserState> {
   final Ref ref;
 
   _init() async {
+    UserState? userState;
     User auth = await ref.watch(userRepositoryProvider).loggedIn();
     state = state.copyWith(loggedIn: auth.loggedIn, user: auth);
-    UserState userState = await ref
-        .watch(userRepositoryProvider)
-        .getUserState(state.user!.projectHandle!);
+    if (state.user?.projectHandle != null) {
+      userState = await ref
+          .watch(userRepositoryProvider)
+          .getUserState(state.user!.projectHandle!);
+    }
     state = state.copyWith(userState: userState);
     Timer.periodic(const Duration(seconds: 30), (timer) async {
       // TODO: this must only run in the foreground
-      auth = await ref.watch(userRepositoryProvider).loggedIn();
-      state = state.copyWith(loggedIn: auth.loggedIn);
+      if (state.loggedIn) {
+        auth = await ref.watch(userRepositoryProvider).loggedIn();
+        state = state.copyWith(loggedIn: auth.loggedIn);
+      }
     });
   }
 
